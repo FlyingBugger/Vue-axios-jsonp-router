@@ -8,6 +8,7 @@ import IndexSign from '../components/IndexSign';
 Vue.use(VueRouter)
 const routes=[{
 	path:'/',
+
 	component:ShowBiu,
 	meta:{
 		title:'main'
@@ -28,6 +29,7 @@ const routes=[{
 }
 ]
 export default new VueRouter({
-		mode:'history',
+		
+	    base: __dirname,
 		routes
 })

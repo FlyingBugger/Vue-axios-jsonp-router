@@ -30,52 +30,40 @@ export default {
       Dates:[]
     }
   },
-  mounted:function(){
-    let tempDates=null;
-    let  that=this;
+  methods:{
+    getDates:function(){
+          let  that=this;
+    setInterval(function(){
+
+       let tempDates=null;
+
     let tempDir=1;
-    jsonp('http://localhost/main/implement.php?act=get', null, function (err, data) {
-        if (err) {
-           console.error(err.message);
-        } else {
-            data.map((v,i)=>{
-              tempDir<=90? tempDir+=7:tempDir=1;
-
-             data[i]['scrollamount']=30;
-             data[i]['scrolldelay']=30;
-             data[i]['position']=tempDir+"%";
-             data[i]['headPic']="//iconfont.alicdn.com/t/1494395652678.png@100h_100w.jpg";
-          
-             that.Dates.push(data[i]);
-            })
-
-        }
-    });
-
-
-          /* 
-           let info=1;
-           let showBingo=123;
-           let that=this;
-           let tempArr=new Array();
-           setInterval(()=>{
-              if(info<=80){
-                info+=7;
-              }
-              tempArr.push({
-                  scrollamount:30,//速度
-                  loop:1,//循环次数
-                  scrolldelay:30,//俩次之前延迟多少s
-                  position:info+"%",//距离顶部多少px；
-                  headPic:"//iconfont.alicdn.com/t/1494395652678.png@100h_100w.jpg",
-                  name:"1px",
-                  color:"red",
-                  info:"condition 2"
-                });
-            },200)
-            */
-          // this.Dates.push(tempArr);
-        //   console.log(this.Dates);
+      axios.post('API/checkDates.php', {
+                act: "showTotals"
+              })
+              .then(function (res) {
+                let data=res.data
+                 data.map((v,i)=>{
+                   
+                   data[i]['scrollamount']=30;
+                   data[i]['scrolldelay']=30;
+                   data[i]['position']=tempDir+"%";
+                   data[i]['headPic']="//iconfont.alicdn.com/t/1494395652678.png@100h_100w.jpg";
+                   that.Dates.push(data[i]);
+                   tempDir<=90? tempDir+=8:tempDir=1;
+                  })
+              })
+              .catch(function (response) {
+                console.log(response);
+              });
+    },2000)
+   
+    }
+  },
+  mounted:function(){
+    
+   this.getDates()
+      
   }
 }
 </script>
@@ -103,6 +91,6 @@ export default {
   }
   .main font{
     position: relative;
-    top: -16px;
+ 
   }
 </style>
