@@ -4,7 +4,7 @@
 
     <ul>
     <li class="li" v-for="(i,v) in Dates" :style="{'top':i.position}">
-         <marquee :scrollamount="i.scrollamount" :loop="i.loop"  >
+         <marquee :scrollamount="i.scrollamount" :class="i.id"  >
            <div style="width:100%;">
                <img :src="i.headPic"/>
                <font  color=black size=+3 :style="{'color':i.color}">
@@ -27,61 +27,76 @@ export default {
   name: 'ShowBiu',
   data () {
     return {
-      Dates:[]
+      Dates:[],
+      arrsLeng:0,
+      ids:[]
+    }
+  },
+  created(){
+    this.$nextTick(function(){
+          
+          console.log('upadtes1```')
+    })
+  },
+  updated:function(){
+      console.log(this.ids);
+    this.ids.map((v)=>{
+      document.getElementsByClassName(v)[0].loop=1;
+    })
+  },
+  methods:{
+    getDates:function(){
+        
+          let  that=this;
+                  let temp=[];
+    setInterval(function(){
+      temp.length=0;
+        let tempDates=null;
+        let tempDir=1;
+      axios.post('API/checkDates.php', {
+                act: "showTotals"
+              })
+              .then(function (res) {
+                if(res.data=='302'){
+                  return false;
+                }
+                let data=res.data;
+               
+                 data.map((v,i)=>{
+                   
+                   data[i]['scrollamount']=30;
+                   data[i]['scrolldelay']=30;
+                   data[i]['position']=tempDir+"%";
+                   temp.push(v['id']);
+                   that.ids=temp;
+                  that.Dates.push(data[i]);
+                   that.$forceUpdate();
+                  
+                   tempDir<=90? tempDir+=10:tempDir=1;
+                  })
+              
+                
+              })
+              .catch(function (response) {
+                console.log(response);
+              });
+    },2000)
+      
     }
   },
   mounted:function(){
-    let tempDates=null;
-    let  that=this;
-    let tempDir=1;
-    jsonp('http://localhost/main/implement.php?act=get', null, function (err, data) {
-        if (err) {
-           console.error(err.message);
-        } else {
-            data.map((v,i)=>{
-              tempDir<=90? tempDir+=7:tempDir=1;
-
-             data[i]['scrollamount']=30;
-             data[i]['scrolldelay']=30;
-             data[i]['position']=tempDir+"%";
-             data[i]['headPic']="//iconfont.alicdn.com/t/1494395652678.png@100h_100w.jpg";
-          
-             that.Dates.push(data[i]);
-            })
-
-        }
-    });
-
-
-          /* 
-           let info=1;
-           let showBingo=123;
-           let that=this;
-           let tempArr=new Array();
-           setInterval(()=>{
-              if(info<=80){
-                info+=7;
-              }
-              tempArr.push({
-                  scrollamount:30,//速度
-                  loop:1,//循环次数
-                  scrolldelay:30,//俩次之前延迟多少s
-                  position:info+"%",//距离顶部多少px；
-                  headPic:"//iconfont.alicdn.com/t/1494395652678.png@100h_100w.jpg",
-                  name:"1px",
-                  color:"red",
-                  info:"condition 2"
-                });
-            },200)
-            */
-          // this.Dates.push(tempArr);
-        //   console.log(this.Dates);
+    
+   this.getDates()
+      
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  marquee{
+    position: relative;;
+  }
   li{
     list-style: none;
     position: absolute;
@@ -103,6 +118,6 @@ export default {
   }
   .main font{
     position: relative;
-    top: -16px;
+  top:5px;
   }
 </style>
